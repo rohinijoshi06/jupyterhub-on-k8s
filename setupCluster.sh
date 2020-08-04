@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-# Initialise a cluster with pod CIDR 192.168.0.0/16 since it is the default for Calico
+# Initialise a cluster with pod CIDR 10.244.0.0/16. Be careful that this IP range does not conflict with that of your nodes. 
+# pod CIDR 192.168.0.0/16 is the default for Calico
 echo "##### Initialising cluster..."
 sudo kubeadm init --kubernetes-version 1.18.1 --pod-network-cidr=10.244.0.0/16 | tee clusterInit.out
 echo "##### Output of cluster initialisation saved to clusterInit.out, use to find the join command to connect worker nodes to the cluster"

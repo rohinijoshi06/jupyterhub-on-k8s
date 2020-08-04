@@ -9,6 +9,7 @@ Initialise the cluster, set up networking via Flannel by default, and enable bas
 Run worker node script on each worker node, this will install any prerequisite packages, Docker, Kubernetes 1.18.1, NFS.  
 `bash runOnWorkerNode.sh`   
 Run the kubeadm join command on each node, this can be found in the output of the cluster initialisation either on your terminal or will be saved in clusterclusterInit.out.  
+From this point, you could jump straight to setting up the [JupyterHub service](https://github.com/rohinijoshi06/jupyterhub-on-k8s/blob/master/README.md#jupyterhub) and use the fallback options in the jhub config file. 
 Optional: Import your cluster into Rancher if you are using it to centrally manage your clusters, (ssh -L 8443:localhost:443 -Nfl ubuntu 130.246.212.36)
 ## Monitoring the cluster 
 This is not essential to the functionality of JupyterHub, but a nice to have.
@@ -44,12 +45,7 @@ Create k8s namespace nfsprovisioner and deploy NFS via helm chart with the follo
 `helm install nfs stable/nfs-server-provisioner --namespace nfsprovisioner --set=storageClass.defaultClass=true`
 
 ## Add a PostGresDB for the hub service
-This is technically optional and a common workaround is to use pod's memory by setting in the JupyterHub helm chart (later) the following setting
-```
-hub:
-  db:
-    type: sqlite-memory
-```
+This is technically optional.
 Add helm charts, create kubernetes namespace, and install a PostGresDB via helm chart with
 ```
 helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -70,14 +66,14 @@ helm repo update
 helm upgrade --install jhub jupyterhub/jupyterhub --namespace jhub --version=0.9.0 --values jupyterhub-config.yaml
 ```
 ## Load Balancer for bare metal cluster
-Here we use [Metallb 0.9.3](https://metallb.universe.tf/). This is required for bare metal clusters or if your cloud provider doesnt provide a load balanacer for k8s clusters.
-Prerequisite: enable strict ARP mode by editing the kube-proxy configmap, search for IPVS, and set strictARP to true
-`kubectl edit configmap -n kube-system kube-proxy`
-Apply namespace yaml
-`kubectl apply -f metallb/namespace.yaml`
-Apply metallb yaml
-`kubectl apply -f metallb/metallb.yaml`
-Create secret on first install only  
-`kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"`
-MetalLB will be idle until you apply the config map that lists the addresses/address pools available. (edit this based on the IPs you have available!)
-`kubectl apply -f metallb/metal_config.yaml`
+Here we use [Metallb 0.9.3](https://metallb.universe.tf/). This is required for bare metal clusters or if your cloud provider doesnt provide a load balanacer for k8s clusters.  
+Prerequisite: enable strict ARP mode by editing the kube-proxy configmap, search for IPVS, and set strictARP to true. 
+`kubectl edit configmap -n kube-system kube-proxy`   
+Apply namespace yaml. 
+`kubectl apply -f metallb/namespace.yaml`  
+Apply metallb yaml. 
+`kubectl apply -f metallb/metallb.yaml`  
+Create secret on first install only    
+`kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"`  
+MetalLB will be idle until you apply the config map that lists the addresses/address pools available. (edit this based on the IPs you have available!).  
+`kubectl apply -f metallb/metal_config.yaml`  

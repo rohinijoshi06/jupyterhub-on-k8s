@@ -87,4 +87,4 @@ sudo nginx -t
 sudo systemctl reload nginx
 ``` 
 
-You should be able to view the JupyterHub service at http://<IP>/hub/login  
+You should be able to view the JupyterHub service at `http://<IP>/hub/login/` 

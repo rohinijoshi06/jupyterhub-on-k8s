@@ -10,6 +10,9 @@ hub:
     url: postgres+psycopg2://postgres:postgres@pgdatabase-postgresql.pgdatabase.svc.cluster.local:5432/jupyterhubdb
     type: postgres
     password: postgres
+# If postgres DB for hub is not needed use this instead
+#   db:
+#     type: sqlite-memory
   extraEnv:
     OAUTH2_AUTHORIZE_URL: https://iris-iam.stfc.ac.uk/authorize
     OAUTH2_TOKEN_URL: https://iris-iam.stfc.ac.uk/token
@@ -26,6 +29,9 @@ singleuser:
     capacity: 6Gi
     dynamic:
       storageClass: "nfs"
+# If persistent user storage not needed use this instead
+# storage:
+#     type: none
   image:
     name: jupyterhub/k8s-singleuser-sample
     tag: '0.8.2'
@@ -38,6 +44,7 @@ singleuser:
       description: "data science env"
       kubespawner_override:
         image: jupyter/datascience-notebook:latest
+# More user profiles can be added here
 
 auth:
   type: custom
@@ -53,6 +60,12 @@ auth:
         userdata_params: {'state': 'state'}
         username_key: preferred_username
         oauth_callback_url: "http://130.246.212.44/hub/oauth_callback"
+# If simply testing JupyterHub with dummy auth replace the above section with
+# auth:
+#   admin:
+#     users:
+#       - admin
+#     access: false
 
 cull:
   enabled: true

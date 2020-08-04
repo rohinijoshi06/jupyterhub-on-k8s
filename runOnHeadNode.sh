@@ -7,7 +7,7 @@ sudo swapoff -a
 # Install prerequisites
 echo 
 echo "##### Running apt-update and installing prerequisite packages..."
-sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common nginx
 
 # Install Docker
 echo

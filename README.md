@@ -76,4 +76,15 @@ Apply metallb yaml.
 Create secret on first install only    
 `kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"`  
 MetalLB will be idle until you apply the config map that lists the addresses/address pools available. (edit this based on the IPs you have available!).  
-`kubectl apply -f metallb/metal_config.yaml`  
+`kubectl apply -f metallb/metal_config.yaml` 
+
+## NGINX reverse proxy on the head node
+Create logs dir, copy in the config file and reload NGINX   
+```
+sudo mkdir /root/logs
+sudo cp nginx/default /etc/nginx/sites-available/default
+sudo nginx -t
+sudo systemctl reload nginx
+``` 
+
+You should be able to view the JupyterHub service at http://<IP>/hub/login  

@@ -1,0 +1,60 @@
+proxy:
+  secretToken: "232689b2225022bfb20ec19ea4aa9dec934e31ebbceabcb48b2e1ea8340655ee"
+  service:
+    type: NodePort 
+
+hub:
+  baseUrl: /escape
+  cookieSecret: "d890a4d5f9b93dc13e42e9fc4fed4e2485cf36902fe4cc9a0bd9ddcc5c4006cd"
+  db:
+    url: postgres+psycopg2://postgres:PoStGrEs@pgdatabase-postgresql.pgdatabase.svc.cluster.local:5432/jhubdb
+    type: postgres
+    password: postgres
+  extraEnv:
+    OAUTH2_AUTHORIZE_URL: https://iam-escape.cloud.cnaf.infn.it/authorize 
+    OAUTH2_TOKEN_URL: https://iam-escape.cloud.cnaf.infn.it/token
+    OAUTH_CALLBACK_URL: http://130.246.212.44/escape/hub/oauth_callback
+
+singleuser:
+  cpu:
+    limit: 2
+    guarantee: 0.5 
+  memory:
+    limit: 5G
+    guarantee: 1G
+  storage:
+    capacity: 6Gi
+    dynamic:
+      storageClass: "nfs"
+  image:
+    name: jupyterhub/k8s-singleuser-sample
+    tag: '0.8.2'
+    pullPolicy: IfNotPresent
+  profileList:
+    - display_name: "Default"
+      description: "The default image"
+      default: true
+    - display_name: "Jupyter data science notebook"
+      description: "data science env"
+      kubespawner_override:
+        image: jupyter/datascience-notebook:latest
+
+auth:
+  type: custom
+  custom:
+      className: oauthenticator.generic.GenericOAuthenticator
+      config:
+        login_service: "ESCAPE IAM"
+        client_id: "f1f6b483-ee46-479c-b8be-5479ff74c180"
+        client_secret: "<redacted>"
+        token_url: https://iam-escape.cloud.cnaf.infn.it/token 
+        userdata_url: https://iam-escape.cloud.cnaf.infn.it/userinfo
+        userdata_method: GET
+        userdata_params: {'state': 'state'}
+        username_key: preferred_username
+        oauth_callback_url: "http://130.246.212.44/escape/hub/oauth_callback"
+
+cull:
+  enabled: true
+  timeout: 1800
+  every: 300

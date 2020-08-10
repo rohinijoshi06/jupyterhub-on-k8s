@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: jhub-ingress-escape
+  namespace: jhub-escape
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /escape
+        backend:
+          serviceName: proxy-public
+          servicePort: 80
+

@@ -38,6 +38,25 @@ singleuser:
       description: "data science env"
       kubespawner_override:
         image: jupyter/datascience-notebook:latest
+    - display_name: "ESCAPE rucio datalake notebook"
+      description: "ESCAPE enabled rucio datalake notebook"
+      kubespawner_override:
+        image: projectescape/rucio-jupyterhub
+        image_pull_policy: Always
+        default_url: /lab
+        environment:
+          RUCIO_MODE: download
+          RUCIO_WILDCARD_ENABLED: "1"
+          RUCIO_BASE_URL: "https://escape-rucio.cern.ch:32300"
+          RUCIO_AUTH_URL: "https://escape-rucio.cern.ch:32301"
+          RUCIO_DISPLAY_NAME: ESCAPE
+          RUCIO_NAME: ESCAPE
+          RUCIO_SITE_NAME: ESCAPE
+          RUCIO_VOMS_ENABLED: "1"
+          RUCIO_VOMS_VOMSES_PATH: "/etc/vomses"
+          RUCIO_VOMS_CERTDIR_PATH: "/etc/grid-security/certificates"
+          RUCIO_VOMS_VOMSDIR_PATH: "/etc/grid-security/vomsdir"
+          RUCIO_CA_CERT: "/etc/grid-security/certificates/CERN-Root-2.pem"
 
 auth:
   type: custom

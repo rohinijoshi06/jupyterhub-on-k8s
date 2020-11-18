@@ -2,7 +2,6 @@ proxy:
   secretToken: "9495069fe618da99744a1adce9a2a11bd05b89918f09228ad158281c1cd31dd5"
   service:
     type: LoadBalancer
-    loadBalancerIP: 130.246.212.44
 
 hub:
   cookieSecret: "0055915cda0071fb868952680f06035fb92a6c25e802d565706fcfe4a649a139"

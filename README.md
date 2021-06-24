@@ -30,14 +30,38 @@ $ ssh -L 30290:localhost:30290 -Nfl rjoshi [external facing IP of the head node]
 ```
 
 ## Deploy NFS for JupyterHub storage (hub + users)
-Add Helm stable repo to access NFS provisioner helm chart 
+
+Add helm repo for NFSProvisioner
+```
+helm repo add kvaps https://kvaps.github.io/charts
+helm repo update
+```
+
+### Deprecated
+Helm stable repo to access NFS provisioner helm chart 
 ```
 helm repo add stable https://kubernetes-charts.storage.googleapis.com/
 helm repo update 
 ```
 
 Create k8s namespace nfsprovisioner and deploy NFS via helm chart with the following command. This will also set the default storage class to be NFS.  
-`helm install nfs stable/nfs-server-provisioner --namespace nfsprovisioner --set=storageClass.defaultClass=true`
+```
+$ kubectl create namespace nfsprovisioner
+$ helm install nfs stable/nfs-server-provisioner --namespace nfsprovisioner --set=storageClass.defaultClass=true
+```
+
+It is recommended to have the NFSProvisioner backed up with some persistence storage (this will hold the mapping between the volumes provisioned and the claims/pod/services they are consumed by). Example of how to do this with a hostPath volume below.
+Note:
+
+1. Create the path prefix on one of your worker nodes mentioned in nfs-pv.yaml under spec.hostPath.path
+2. The spec.capacity.storage in nfs-pv.yaml should match the persistence.size in nfsprovisioner.yaml
+3. The name of the node where the hostPath is created should be mentioned in nfsprovisioner.yaml under nodeSelector.kubernetes.io/hostname
+
+```
+kubectl apply -f nfs-pv.yaml -n nfsprovisioner
+helm install nfs kvaps/nfs-server-provisioner -n nfsprovisioner --version 1.3.0 -f nfsprovisioner.yaml 
+```
+
 
 ## Add a PostGresDB for the hub service
 This is technically optional.

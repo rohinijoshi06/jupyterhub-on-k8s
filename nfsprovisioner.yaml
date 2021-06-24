@@ -1,0 +1,10 @@
+persistence:
+  enabled: true
+  storageClass: "-"
+  size: 20Gi
+
+storageClass:
+  defaultClass: true
+
+nodeSelector:
+  kubernetes.io/hostname: kubernetes-worker-3

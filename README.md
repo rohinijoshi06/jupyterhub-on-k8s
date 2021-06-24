@@ -29,28 +29,6 @@ $ helm install prometheus-stack -n monitoring prometheus-community/kube-promethe
 $ ssh -L 30290:localhost:30290 -Nfl rjoshi [external facing IP of the head node]
 ```
 
-### Deprecated
-Set up Promethues + Grafana monitoring by creating/applying the necessary k8s objects in the following order
-```
-kubectl create -f prometheus/namespace.yaml
-kubectl create -f prometheus/clusterRole.yaml
-kubectl create -f prometheus/config-map.yml
-kubectl create -f prometheus/prometheus-deployment.yml
-kubectl create -f prometheus/grafana-datasource-config.yaml
-kubectl create -f prometheus/grafana-deployment.yaml
-kubectl create -f prometheus/grafana-service.yaml
-```
-You can see the Prometheus and Grafana services running in the monitoring namespace
-```
-kubectl get svc -n monitoring -o wide
-NAME                 TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE     SELECTOR
-grafana              NodePort   10.106.106.238   <none>        3000:32000/TCP   6m45s   app=grafana
-prometheus-service   NodePort   10.110.94.30     <none>        8080:32300/TCP   9m6s    app=prometheus-server
-```
-See Grafana dashboard either on any Node IP + port 32000 (if your workers nodes are externally accessible) or ssh tunnelling
-Login with admin/admin and you'll be prompted to change the password
-Import the Kubernetes metrics dashboard template (ID 8588) from the Grafana Dashboard
-
 ## Deploy NFS for JupyterHub storage (hub + users)
 Add Helm stable repo to access NFS provisioner helm chart 
 ```
@@ -83,7 +61,7 @@ As before we will create a kubernetes namespace for the application ie jhub, add
 ```
 helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
 helm repo update
-helm upgrade --install jhub jupyterhub/jupyterhub --namespace jhub --version=0.9.0 --values jupyterhub-config.yaml
+helm upgrade --install jhub jupyterhub/jupyterhub --namespace jhub --version=0.11.0 --values jupyterhub-config.yaml
 ```
 ## Load Balancer for bare metal cluster
 Here we use [Metallb 0.9.3](https://metallb.universe.tf/). This is required for bare metal clusters or if your cloud provider doesnt provide a load balanacer for k8s clusters.  

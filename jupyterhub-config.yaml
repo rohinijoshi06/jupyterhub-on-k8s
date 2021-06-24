@@ -3,8 +3,21 @@ proxy:
   service:
     type: LoadBalancer
 
+# Running a local network private registry to bypass Docker pull rate limits
+# Remove this section and references to 'image-pull-secret' in the yaml if you are not pointing to a registry
+imagePullSecret:
+  create: true
+  registry: 192.168.50.97:5000
+  username: admin
+  password: <redacted>
+
 hub:
   cookieSecret: "0055915cda0071fb868952680f06035fb92a6c25e802d565706fcfe4a649a139"
+  image:
+    name: 192.168.50.97:5000/jupyterhub/k8s-hub
+    tag: '0.11.0'
+    pullSecrets:
+     - "image-pull-secret"
   db:
     url: postgres+psycopg2://postgres:postgres@pgdatabase-postgresql.pgdatabase.svc.cluster.local:5432/jupyterhubdb
     type: postgres
@@ -12,10 +25,22 @@ hub:
 # If postgres DB for hub is not needed use this instead
 #   db:
 #     type: sqlite-memory
-  extraEnv:
-    OAUTH2_AUTHORIZE_URL: https://iris-iam.stfc.ac.uk/authorize
-    OAUTH2_TOKEN_URL: https://iris-iam.stfc.ac.uk/token
-    OAUTH_CALLBACK_URL: https://srcdev.skatelescope.org/iris/hub/oauth_callback
+  config:
+    GenericOAuthenticator:
+      login_service: "IRIS IAM"
+      client_id: "<redacted>"
+      client_secret: "<redacted>"
+      oauth_callback_url: "https://srcdev.skatelescope.org/iris/hub/oauth_callback"
+      authorize_url: https://iris-iam.stfc.ac.uk/authorize
+      token_url: https://iris-iam.stfc.ac.uk/token
+      userdata_url: https://iris-iam.stfc.ac.uk/userinfo
+      userdata_method: GET
+      userdata_params: {'state': 'state'}
+      username_key: preferred_username
+    JupyterHub:
+      authenticator_class: generic-oauth
+  # Leave out the config section above if you don't want to configure IAM for auth
+  # JupyterHub will default to dummy auth and allow you to enter with any user/pass combination.
 
 singleuser:
   cpu:
@@ -33,8 +58,10 @@ singleuser:
 #     type: none
   image:
     name: jupyterhub/k8s-singleuser-sample
-    tag: '0.8.2'
+    tag: '0.11.0'
     pullPolicy: IfNotPresent
+    pullSecrets:
+     - "image-pull-secret"
   profileList:
     - display_name: "Default"
       description: "The default image"
@@ -44,27 +71,6 @@ singleuser:
       kubespawner_override:
         image: jupyter/datascience-notebook:latest
 # More user profiles can be added here
-
-auth:
-  type: custom
-  custom:
-      className: oauthenticator.generic.GenericOAuthenticator
-      config:
-        login_service: "IRIS IAM"
-        client_id: "a4d5d04e-9a78-41fc-b3ef-38cf113f3d46"
-        client_secret: "<redacted>"
-        token_url: https://iris-iam.stfc.ac.uk/token
-        userdata_url: https://iris-iam.stfc.ac.uk/userinfo
-        userdata_method: GET
-        userdata_params: {'state': 'state'}
-        username_key: preferred_username
-        oauth_callback_url: "https://srcdev.skatelescope.org/iris/hub/oauth_callback"
-# If simply testing JupyterHub with dummy auth replace the above section with
-# auth:
-#   admin:
-#     users:
-#       - admin
-#     access: false
 
 cull:
   enabled: true

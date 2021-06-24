@@ -3,17 +3,39 @@ proxy:
   service:
     type: NodePort 
 
+# Running a local network private registry to bypass Docker pull rate limits
+# Remove this section and references to 'image-pull-secret' in the yaml if you are not pointing to a registry
+imagePullSecret:
+  create: true
+  registry: 192.168.50.97:5000
+  username: admin
+  password: <redacted>
+
 hub:
   baseUrl: /escape
   cookieSecret: "d890a4d5f9b93dc13e42e9fc4fed4e2485cf36902fe4cc9a0bd9ddcc5c4006cd"
+  image:
+    name: 192.168.50.97:5000/jupyterhub/k8s-hub
+    tag: '0.11.0'
+    pullSecrets:
+     - "image-pull-secret"
   db:
     url: postgres+psycopg2://postgres:PoStGrEs@pgdatabase-postgresql.pgdatabase.svc.cluster.local:5432/jhubdb
     type: postgres
     password: postgres
-  extraEnv:
-    OAUTH2_AUTHORIZE_URL: https://iam-escape.cloud.cnaf.infn.it/authorize 
-    OAUTH2_TOKEN_URL: https://iam-escape.cloud.cnaf.infn.it/token
-    OAUTH_CALLBACK_URL: https://srcdev.skatelescope.org/escape/hub/oauth_callback
+  config:
+    GenericOAuthenticator:
+      login_service: "ESCAPE IAM"
+      client_id: "<redacted>"
+      client_secret: "<redacted>"
+      token_url: https://iam-escape.cloud.cnaf.infn.it/token
+      userdata_url: https://iam-escape.cloud.cnaf.infn.it/userinfo
+      userdata_method: GET
+      userdata_params: {'state': 'state'}
+      username_key: preferred_username
+      oauth_callback_url: "https://srcdev.skatelescope.org/escape/hub/oauth_callback"
+    JupyterHub:
+      authenticator_class: generic-oauth
 
 singleuser:
   cpu:
@@ -28,8 +50,10 @@ singleuser:
       storageClass: "nfs"
   image:
     name: jupyterhub/k8s-singleuser-sample
-    tag: '0.8.2'
+    tag: '0.11.0'
     pullPolicy: IfNotPresent
+    pullSecrets:
+     - "image-pull-secret"
   profileList:
     - display_name: "Default"
       description: "The default image"
@@ -57,21 +81,6 @@ singleuser:
           RUCIO_VOMS_CERTDIR_PATH: "/etc/grid-security/certificates"
           RUCIO_VOMS_VOMSDIR_PATH: "/etc/grid-security/vomsdir"
           RUCIO_CA_CERT: "/etc/grid-security/certificates/CERN-Root-2.pem"
-
-auth:
-  type: custom
-  custom:
-      className: oauthenticator.generic.GenericOAuthenticator
-      config:
-        login_service: "ESCAPE IAM"
-        client_id: "f1f6b483-ee46-479c-b8be-5479ff74c180"
-        client_secret: "<redacted>"
-        token_url: https://iam-escape.cloud.cnaf.infn.it/token 
-        userdata_url: https://iam-escape.cloud.cnaf.infn.it/userinfo
-        userdata_method: GET
-        userdata_params: {'state': 'state'}
-        username_key: preferred_username
-        oauth_callback_url: "https://srcdev.skatelescope.org/escape/hub/oauth_callback"
 
 cull:
   enabled: true

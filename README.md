@@ -12,6 +12,7 @@ Run the kubeadm join command on each node, this can be found in the output of th
 From this point, you could jump straight to setting up the [JupyterHub service](https://github.com/rohinijoshi06/jupyterhub-on-k8s/blob/master/README.md#jupyterhub) and use the fallback options in the jhub config file. 
 Optional: Import your cluster into Rancher if you are using it to centrally manage your clusters, (ssh -L 8443:localhost:443 -Nfl ubuntu 130.246.212.36)
 ## Monitoring the cluster 
+
 This is not essential to the functionality of JupyterHub, but a nice to have.
 Set up Promethues + Grafana monitoring by creating/applying the necessary k8s objects in the following order
 ```

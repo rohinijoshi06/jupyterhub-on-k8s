@@ -1,0 +1,44 @@
+jupyterhub:
+  cull:
+    # don't cull authenticated users
+    users: False
+  custom:
+    binderauth_enabled: true
+  hub:
+    baseUrl: /jupyterhub/
+    redirectToServer: false
+    services:
+      binder:
+        oauth_no_confirm: true
+        oauth_redirect_uri: "https://<binderhub_ip>/binderhub/oauth_callback"
+        oauth_client_id: "binder-oauth-client-test"
+    config:
+      GenericOAuthenticator:
+        login_service: "ESCAPE IAM"
+        client_id: "<redacted>"
+        client_secret: "<redacted>"
+        oauth_callback_url: "https://<binderhub_ip>/jupyterhub/hub/oauth_callback"
+        authorize_url: https://iam-escape.cloud.cnaf.infn.it/authorize
+        token_url: https://iam-escape.cloud.cnaf.infn.it/token
+        userdata_url: https://iam-escape.cloud.cnaf.infn.it/userinfo
+        userdata_method: GET
+        userdata_params: {'state': 'state'}
+        username_key: preferred_username
+      JupyterHub:
+        authenticator_class: generic-oauth
+  singleuser:
+    # to make notebook servers aware of hub
+    cmd: jupyterhub-singleuser
+  auth: {}
+ 
+# BinderHub config
+config:
+  BinderHub:
+    auth_enabled: true
+    use_registry: true
+    image_prefix: srcdev/binder-dev-
+    hub_url: https://<binderhub_ip>/jupyterhub/
+    base_url: /binderhub/
+ 
+service:
+  type: NodePort

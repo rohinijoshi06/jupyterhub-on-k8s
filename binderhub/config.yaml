@@ -7,7 +7,7 @@ config:
   BinderHub:
     use_registry: true
     image_prefix: srcdev/binder-dev-
-    hub_url: http://130.246.214.144/jupyterhub/
+    hub_url: http://<binderhub_ip>/jupyterhub/
     base_url: /binderhub/
 
 service:

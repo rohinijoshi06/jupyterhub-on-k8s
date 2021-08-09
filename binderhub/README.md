@@ -100,7 +100,7 @@ We use the Docker Hub mirror hosted by STFC Cloud for storing image environments
 
     ```
         location /binderhub/ {
-            proxy_pass http://192.168.50.163:32572/binderhub/;
+            proxy_pass http://192.168.50.163:32574/binderhub/;
             proxy_redirect off;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;

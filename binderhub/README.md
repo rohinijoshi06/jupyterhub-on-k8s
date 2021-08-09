@@ -100,13 +100,16 @@ We use the Docker Hub mirror hosted by STFC Cloud for storing image environments
 
     ```
         location /binderhub/ {
-            proxy_pass http://192.168.50.163:32574/binderhub/;
+            proxy_pass http://192.168.50.163:32572/binderhub/;
             proxy_redirect off;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection 'upgrade';
             proxy_set_header Host $host;
             proxy_cache_bypass $http_upgrade;
+        
+            access_log /root/logs/srcdev.skatelescope.org-binderhub-access.log;
+            error_log /root/logs/srcdev.skatelescope.org-binderhub-error.log;
         }
         location /jupyterhub/ {
             proxy_pass http://192.168.50.163:80/jupyterhub/;
@@ -116,6 +119,9 @@ We use the Docker Hub mirror hosted by STFC Cloud for storing image environments
             proxy_set_header Connection 'upgrade';
             proxy_set_header Host $host;
             proxy_cache_bypass $http_upgrade;
+        
+            access_log /root/logs/srcdev.skatelescope.org-jupyterhub-access.log;
+            error_log /root/logs/srcdev.skatelescope.org-jupyterhub-error.log;
         }
     ```
 
@@ -132,3 +138,5 @@ We use the Docker Hub mirror hosted by STFC Cloud for storing image environments
 13. Navigate to http://130.246.214.144/binderhub/ in a browser to view the BinderHub front end.
 
 14. Verify functionality by adding an example GitHub repository URL (e.g. https://github.com/binder-examples/requirements) into the corresponding field. BinderHub should be able to build an image from this, push to the registry, and then launch and redirect to a Jupyter Notebook environment.
+
+15. (Optional) Configure authentication. BinderHub defers to JupyterHub for authenticating users with an external service, and an example `config-auth.yaml` file, using a client registered with ESCAPE IAM, is provided in this repository.

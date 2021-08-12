@@ -140,3 +140,11 @@ We use the Docker Hub mirror hosted by STFC Cloud for storing image environments
 14. Verify functionality by adding an example GitHub repository URL (e.g. https://github.com/binder-examples/requirements) into the corresponding field. BinderHub should be able to build an image from this, push to the registry, and then launch and redirect to a Jupyter Notebook environment.
 
 15. (Optional) Configure authentication. BinderHub defers to JupyterHub for authenticating users with an external service, and an example `config-auth.yaml` file, using a client registered with ESCAPE IAM, is provided in this repository.
+
+## User Guide
+
+The deployment can be used in the same way as other Binder deployments, for example, the publicly available [MyBinder](https://mybinder.org/). For a repository to be compatible with BinderHub, it needs a standard configuration file to define the environment requirements, be that an `environment.yml` or a `requirements.txt` file.
+
+So for Python projects, it is usually the case that a `requirements.txt` file will set out all of the Python packages that are required to run the code in that project. This has some limitations, notably where a project's dependencies are not pure Python, though it is usually possible to wrap non-Python code into Python packages.
+
+An example of a Binder-compliant repository is provided for the [HCG-16 Project](https://ui.adsabs.harvard.edu/abs/2019A%26A...632A..78J/abstract): https://github.com/AMIGA-IAA/hcg-16. This link can be added to the GitHub repository URL field of the Binder page, and used to spawn an interactive environment where the analysis can be reproduced.

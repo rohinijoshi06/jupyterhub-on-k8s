@@ -100,7 +100,7 @@ We use the Docker Hub mirror hosted by STFC Cloud for storing image environments
 
     ```
         location /binderhub/ {
-            proxy_pass http://192.168.50.163:32574/binderhub/;
+            proxy_pass http://192.168.50.163:32574$request_uri;
             proxy_redirect off;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
@@ -126,6 +126,7 @@ We use the Docker Hub mirror hosted by STFC Cloud for storing image environments
     ```
 
     Note: we route `/binderhub/` through to the high port number (32574) that the binder instance is mapped to, and `/jupyterhub/` to port 80, since the `proxy-public` LoadBalancer is listening on this port.
+    Note 2: The $request_uri variable is used in the BinderHub location to prevent NGINX sanitising redirect links, which may have unintended consequences.
 
 11. Configure the base URLs of both BinderHub and JupyterHub, so the applications function correctly when accessed through the proxy. Also update the `hub_url` property of the BinderHub deployment, so it can talk to JupyterHub (see full chart [here](https://github.com/jupyterhub/binderhub/blob/master/helm-chart/binderhub/values.yaml#L30)). The example `config.yaml` file has example values added, which may need modifying if using different locations in the NGINX config above.
 
@@ -139,7 +140,9 @@ We use the Docker Hub mirror hosted by STFC Cloud for storing image environments
 
 14. Verify functionality by adding an example GitHub repository URL (e.g. https://github.com/binder-examples/requirements) into the corresponding field. BinderHub should be able to build an image from this, push to the registry, and then launch and redirect to a Jupyter Notebook environment.
 
-15. (Optional) Configure authentication. BinderHub defers to JupyterHub for authenticating users with an external service, and an example `config-auth.yaml` file, using a client registered with ESCAPE IAM, is provided in this repository.
+15. (Optional) Configure authentication. BinderHub defers to JupyterHub for authenticating users with an external service, and an example `config-options.yaml` file, using a client registered with ESCAPE IAM, is provided in this repository.
+
+16. (Optional) Configure persistent storage. Volumes can be mounted in the BinderHub's JupyterHub environment in the same way as in the standard JupyterHub. An example setup is shown in `config-options.yaml`, which would require a PVC called `binderhub-data-rw-pvc` to be created.
 
 ## User Guide
 

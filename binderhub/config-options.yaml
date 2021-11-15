@@ -6,6 +6,7 @@ jupyterhub:
     binderauth_enabled: true
   hub:
     baseUrl: /jupyterhub/
+    # Configure authentication with external provider:
     redirectToServer: false
     services:
       binder:
@@ -27,13 +28,26 @@ jupyterhub:
       JupyterHub:
         authenticator_class: generic-oauth
   singleuser:
-    # to make notebook servers aware of hub
+    # Make notebook servers aware of hub
     cmd: jupyterhub-singleuser
+    # (Optional) Configure persistent storage
+    storage:
+      capacity: 1Gi
+      dynamic:
+        storageClass: "nfs-large"
+      extraVolumes:
+        - name: binderhub-shared-rw
+          persistentVolumeClaim:
+            claimName: binderhub-data-rw-pvc
+      extraVolumeMounts:
+        - name: binderhub-shared-rw
+          mountPath: /home/jovyan/data
   auth: {}
  
 # BinderHub config
 config:
   BinderHub:
+    # Enable auth, configured in jupyterhub section
     auth_enabled: true
     use_registry: true
     image_prefix: srcdev/binder-dev-

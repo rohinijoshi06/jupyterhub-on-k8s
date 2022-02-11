@@ -1,6 +1,6 @@
 # BinderHub on K8s
 
-This deployment guide broadly follows the zero to BinderHub guide: https://binderhub.readthedocs.io/en/latest/zero-to-binderhub/index.html. We have added some additional steps that may be useful for those wishing to deploy from scratch in a cloud environment.
+This deployment guide broadly follows the zero to BinderHub guide: https://binderhub.readthedocs.io/en/latest/zero-to-binderhub/index.html. We have added some additional steps that may be useful for those wishing to deploy from scratch in a cloud environment.
 
 For general setup of the K8s cluster, see the instructions at the top level of this repository.
 
@@ -85,7 +85,7 @@ We use the Docker Hub mirror hosted by STFC Cloud for storing image environments
 
 9. Ensure that the `proxy-public` LoadBalancer service (in the `binder` namespace) has grabbed the floating IP.
 
-    (Note: If it is `<pending>`, ensure that no other LoadBalancer service has grabbed the IP. In the event that it has, you can force the correct LoadBalancer service to pick up the IP by changing all 'LoadBalancer's to 'NodePort's (via e.g. `kubectl edit svc -n binder binder`), and then change the `proxy-public` back to a LoadBalancer; this should force a recheck and allow it to acquire the IP.)
+    (Note: If it is `<pending>`, ensure that no other LoadBalancer service has grabbed the IP. In the event that it has, you can force the correct LoadBalancer service to pick up the IP by changing all 'LoadBalancer's to 'NodePort's (via e.g. `kubectl edit svc -n binder binder`), and then change the `proxy-public` back to a LoadBalancer; this should force a recheck and allow it to acquire the IP.)
 
     ```
     $ kubectl get svc -n binder 
@@ -129,7 +129,7 @@ We use the Docker Hub mirror hosted by STFC Cloud for storing image environments
     
     Note 2: The `$request_uri` variable is used in the BinderHub location to prevent NGINX sanitising redirect links, which may have unintended consequences.
 
-11. Configure the base URLs of both BinderHub and JupyterHub, so the applications function correctly when accessed through the proxy. Also update the `hub_url` property of the BinderHub deployment, so it can talk to JupyterHub (see full chart [here](https://github.com/jupyterhub/binderhub/blob/master/helm-chart/binderhub/values.yaml#L30)). The example `config.yaml` file has example values added, which may need modifying if using different locations in the NGINX config above.
+11. Configure the base URLs of both BinderHub and JupyterHub, so the applications function correctly when accessed through the proxy. Also update the `hub_url` property of the BinderHub deployment, so it can talk to JupyterHub (see full chart [here](https://github.com/jupyterhub/binderhub/blob/master/helm-chart/binderhub/values.yaml#L30)). The example `config.yaml` file has example values added, which may need modifying if using different locations in the NGINX config above.
 
 12. Upgrade the deployment:
 

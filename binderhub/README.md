@@ -126,17 +126,18 @@ We use the Docker Hub mirror hosted by STFC Cloud for storing image environments
     ```
 
     Note: we route `/binderhub/` through to the high port number (32574) that the binder instance is mapped to, and `/jupyterhub/` to port 80, since the `proxy-public` LoadBalancer is listening on this port.
-    Note 2: The $request_uri variable is used in the BinderHub location to prevent NGINX sanitising redirect links, which may have unintended consequences.
+    
+    Note 2: The `$request_uri` variable is used in the BinderHub location to prevent NGINX sanitising redirect links, which may have unintended consequences.
 
 11. Configure the base URLs of both BinderHub and JupyterHub, so the applications function correctly when accessed through the proxy. Also update the `hub_url` property of the BinderHub deployment, so it can talk to JupyterHub (see full chart [here](https://github.com/jupyterhub/binderhub/blob/master/helm-chart/binderhub/values.yaml#L30)). The example `config.yaml` file has example values added, which may need modifying if using different locations in the NGINX config above.
 
-12. Upgrade the Helm chart:
+12. Upgrade the deployment:
 
     ```bash
     $ helm upgrade --install binder jupyterhub/binderhub --version=0.2.0-n600.h36369a7 --namespace=binder -f secret.yaml -f config.yaml
     ```
 
-13. Navigate to http://130.246.214.144/binderhub/ in a browser to view the BinderHub front end.
+13. Navigate to http://130.246.214.144/binderhub/ in a browser to view the BinderHub front end.
 
 14. Verify functionality by adding an example GitHub repository URL (e.g. https://github.com/binder-examples/requirements) into the corresponding field. BinderHub should be able to build an image from this, push to the registry, and then launch and redirect to a Jupyter Notebook environment.
 

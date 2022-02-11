@@ -15,7 +15,7 @@ sudo apt-get install -y docker.io
 
 # Install Kubernetes
 echo
-echo "##### Installing Kubernetes 1.18.1"
+echo "##### Installing Kubernetes 1.20.0"
 sudo sh -c "echo 'deb http://apt.kubernetes.io/ kubernetes-xenial main' >> /etc/apt/sources.list.d/kubernetes.list"
 
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -

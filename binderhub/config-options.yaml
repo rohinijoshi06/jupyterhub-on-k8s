@@ -31,17 +31,28 @@ jupyterhub:
     # Make notebook servers aware of hub
     cmd: jupyterhub-singleuser
     # (Optional) Configure persistent storage
+    # The BinderHub Helm chart disables some default JupyterHub behaviour
+    # (such as per user PVCs); we re-enable this here.
     storage:
-      capacity: 1Gi
+      type: dynamic
+      extraLabels: {}
+      static:
+        pvcName:
+        subPath: "{username}"
+      capacity: 10Gi
+      homeMountPath: /home/jovyan/personal
       dynamic:
-        storageClass: "nfs-large"
+        storageClass: "rook-cephfs"
+        pvcNameTemplate: claim-{username}{servername}
+        volumeNameTemplate: volume-{username}{servername}
+        storageAccessModes: [ReadWriteOnce]
       extraVolumes:
         - name: binderhub-shared-rw
           persistentVolumeClaim:
-            claimName: binderhub-data-rw-pvc
+            claimName: binderhub-data-cephfs-rw-pvc
       extraVolumeMounts:
         - name: binderhub-shared-rw
-          mountPath: /home/jovyan/data
+          mountPath: /home/jovyan/shared-workflows
     
     # (Optional) Add default environments for JHub to offer
     profileList:

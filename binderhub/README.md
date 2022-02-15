@@ -143,7 +143,7 @@ We use the Docker Hub mirror hosted by STFC Cloud for storing image environments
 
 15. (Optional) Configure authentication. BinderHub defers to JupyterHub for authenticating users with an external service, and an example `config-options.yaml` file, using a client registered with ESCAPE IAM, is provided in this repository.
 
-16. (Optional) Configure persistent storage. Volumes can be mounted in the BinderHub's JupyterHub environment in the same way as in the standard JupyterHub. An example setup is shown in `config-options.yaml`, which would require a PVC called `binderhub-data-rw-pvc` to be created.
+16. (Optional) Configure persistent storage. Volumes can be mounted in the BinderHub's JupyterHub environment in the same way as in the standard JupyterHub. An example setup is shown in `config-options.yaml`, which would require a PVC called `binderhub-data-rw-pvc` to be created. Another caveat with the BinderHub implementation of JupyterHub is that some of the default JupyterHub behaviour is disabled at a Helm chart level. Thus in order to enable per-user dynamic PVCs, these values must be explicitly added to the `jupyterhub/singleuser/storage` configuration.
 
 ## User Guide
 
